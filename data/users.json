@@ -1,0 +1,38 @@
+[
+  {
+    "firstName": "Don",
+    "lastName": "Landis",
+    "height": "5",
+    "age": 12,
+    "sex": "male",
+    "eyeColor": "Brown",
+    "mailingAddress": "1234 hweklow`",
+    "email": "hello@hello.com",
+    "phoneNumber": "1234567878",
+    "permitType": "regular",
+    "termsAccepted": true,
+    "communicationsOptIn": true,
+    "paymentCompleted": false,
+    "id": "user_1761162947884_tp59281iq",
+    "createdAt": "2025-10-22T19:55:47.884Z",
+    "updatedAt": "2025-10-22T19:55:47.884Z"
+  },
+  {
+    "firstName": "Test",
+    "lastName": "User",
+    "height": "5'8\"",
+    "age": 25,
+    "sex": "male",
+    "eyeColor": "Brown",
+    "mailingAddress": "123 Test St",
+    "email": "test@example.com",
+    "phoneNumber": "5551234567",
+    "permitType": "regular",
+    "termsAccepted": true,
+    "communicationsOptIn": false,
+    "paymentCompleted": false,
+    "id": "user_1761253710930_d4ldz3j4b",
+    "createdAt": "2025-10-23T21:08:30.930Z",
+    "updatedAt": "2025-10-23T21:08:30.930Z"
+  }
+]

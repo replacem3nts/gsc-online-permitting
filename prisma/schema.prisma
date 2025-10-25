@@ -1,0 +1,88 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                    String   @id @default(cuid())
+  firstName             String
+  lastName              String
+  height                String
+  dateOfBirthMonth      Int
+  dateOfBirthDay        Int
+  dateOfBirthYear       Int
+  sex                   Sex
+  eyeColor              EyeColor
+  addressLine1          String
+  addressLine2          String?
+  town                  String
+  state                 String
+  zipCode               String
+  email                 String   @unique
+  phoneNumber           String
+  permitType            PermitType
+  termsAccepted         Boolean  @default(false)
+  communicationsOptIn   Boolean  @default(false)
+  paymentCompleted      Boolean  @default(false)
+  paymentId             String?
+  paymentDate           DateTime?
+  permitNumber          String?  @unique
+  tempPermitExpirationDate DateTime?
+  permitScreenshot      String?
+  notes                 String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("users")
+}
+
+enum Sex {
+  male
+  female
+  other
+  prefer_not_to_say
+}
+
+enum EyeColor {
+  Brown
+  Blue
+  Green
+  Grey
+  Hazel
+}
+
+enum PermitType {
+  regular
+  senior
+  junior
+}
+
+model Admin {
+  id          String   @id @default(cuid())
+  username    String   @unique
+  password    String
+  email       String?  @unique
+  firstName   String?
+  lastName    String?
+  role        AdminRole @default(ADMIN)
+  isActive    Boolean  @default(true)
+  lastLoginAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("admins")
+}
+
+enum AdminRole {
+  SUPER_ADMIN
+  ADMIN
+  VIEWER
+}

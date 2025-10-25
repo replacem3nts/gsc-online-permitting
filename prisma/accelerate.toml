@@ -1,0 +1,16 @@
+# Prisma Accelerate Configuration
+# This file is used to configure Prisma Accelerate for production deployments
+
+[accelerate]
+# The connection string for your database
+# Replace with your actual database URL when deploying
+# DATABASE_URL="prisma://accelerate.prisma-data.net/?api_key=YOUR_API_KEY"
+
+# Connection pooling settings
+max_connections = 10
+connection_timeout = 10
+query_timeout = 30
+
+# Caching settings
+cache_ttl = 60
+cache_max_size = 1000
