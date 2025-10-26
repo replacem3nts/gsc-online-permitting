@@ -6,6 +6,8 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     
+    console.log('Received application data:', JSON.stringify(body, null, 2))
+    
     // Validate the request body
     const validatedData = permitApplicationApiSchema.parse(body)
     
@@ -56,8 +58,13 @@ export async function POST(request: NextRequest) {
     
   } catch (error) {
     console.error('Error submitting permit application:', error)
+    console.error('Error details:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : null
+    })
     
     if (error instanceof Error && error.name === 'ZodError') {
+      console.error('Validation errors:', error)
       return NextResponse.json(
         { message: 'Invalid form data', errors: error },
         { status: 400 }
@@ -65,7 +72,10 @@ export async function POST(request: NextRequest) {
     }
     
     return NextResponse.json(
-      { message: 'Internal server error' },
+      { 
+        message: 'Internal server error',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     )
   }
