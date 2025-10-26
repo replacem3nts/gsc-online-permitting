@@ -32,8 +32,28 @@ export async function POST(request: NextRequest) {
       )
     }
     
-    // If payment already completed, return existing data
+    // If payment already completed, update the screenshot if provided, then return
     if (existingUser.paymentCompleted) {
+      if (permitScreenshot) {
+        // Update the screenshot field even if payment is already completed
+        const updatedUser = await prisma.user.update({
+          where: { id: userId },
+          data: { permitScreenshot: permitScreenshot }
+        })
+        
+        return NextResponse.json({
+          message: 'Screenshot updated',
+          user: {
+            id: updatedUser.id,
+            paymentCompleted: updatedUser.paymentCompleted,
+            paymentDate: updatedUser.paymentDate,
+            permitNumber: updatedUser.permitNumber,
+            tempPermitExpirationDate: updatedUser.tempPermitExpirationDate,
+            permitScreenshot: updatedUser.permitScreenshot
+          }
+        })
+      }
+      
       return NextResponse.json({
         message: 'Payment already completed',
         user: {
@@ -53,7 +73,7 @@ export async function POST(request: NextRequest) {
     const maxAttempts = 10
     
     while (attempts < maxAttempts) {
-      // Get the highest existing permit number
+      // Get all completed permits with permit numbers
       const existingPermits = await prisma.user.findMany({
         where: {
           paymentCompleted: true,
@@ -63,17 +83,18 @@ export async function POST(request: NextRequest) {
         },
         select: {
           permitNumber: true
-        },
-        orderBy: {
-          permitNumber: 'desc'
-        },
-        take: 1
+        }
       })
       
+      // Convert all permit numbers to integers and find the max
+      const permitNumbers = existingPermits
+        .map(p => parseInt(p.permitNumber || '0'))
+        .filter(n => !isNaN(n))
+      
       // Generate next sequential permit number
-      if (existingPermits.length > 0 && existingPermits[0].permitNumber) {
-        const lastNumber = parseInt(existingPermits[0].permitNumber)
-        permitNumber = String(lastNumber + 1 + attempts).padStart(3, '0')
+      if (permitNumbers.length > 0) {
+        const maxNumber = Math.max(...permitNumbers)
+        permitNumber = String(maxNumber + 1 + attempts).padStart(3, '0')
       } else {
         permitNumber = String(1 + attempts).padStart(3, '0')
       }

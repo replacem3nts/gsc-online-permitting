@@ -34,13 +34,13 @@ export async function POST(request: NextRequest) {
         style: {
           width: '816px',
           height: '535px',
-          backgroundImage: 'url(/blank_permit.png)',
+          backgroundImage: 'url(https://gscpermits.com/blank_permit.png)',
           backgroundSize: '100% 100%',
           backgroundPosition: 'top left',
           backgroundRepeat: 'no-repeat',
           position: 'relative',
           display: 'flex',
-          fontFamily: 'Arial, sans-serif',
+          fontFamily: 'Georgia, serif',
         }
       }, [
         // Season
@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
           key: 'season',
           style: {
             position: 'absolute',
-            top: '185px',
+            top: '190px',
             left: '45px',
             textAlign: 'center',
             fontSize: '18px',
@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
           key: 'permit-number',
           style: {
             position: 'absolute',
-            top: '185px',
+            top: '190px',
             left: '235px',
             textAlign: 'center',
             fontSize: '18px',
@@ -107,7 +107,7 @@ export async function POST(request: NextRequest) {
           key: 'height',
           style: {
             position: 'absolute',
-            top: '175px',
+            top: '180px',
             left: '450px',
             textAlign: 'center',
             fontSize: '16px',
@@ -119,7 +119,7 @@ export async function POST(request: NextRequest) {
           key: 'dob',
           style: {
             position: 'absolute',
-            top: '175px',
+            top: '180px',
             left: '570px',
             textAlign: 'center',
             fontSize: '14px',
@@ -131,7 +131,7 @@ export async function POST(request: NextRequest) {
           key: 'eye-color',
           style: {
             position: 'absolute',
-            top: '175px',
+            top: '180px',
             left: '695px',
             textAlign: 'center',
             fontSize: '16px',
@@ -155,6 +155,7 @@ export async function POST(request: NextRequest) {
       const blob = await put(`permit_${userId}_screenshot.png`, buffer, {
         access: 'public',
         contentType: 'image/png',
+        allowOverwrite: true,
       });
 
       console.log(`Screenshot uploaded to Vercel Blob: ${blob.url}`);

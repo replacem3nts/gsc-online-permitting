@@ -88,7 +88,7 @@ function PermitContent({ params }: { params: { userId: string } }) {
 
   return (
     <div className="bg-gray-800">
-      <div className="relative w-[816px] h-[535px] m-0" style={{ backgroundImage: 'url(/blank_permit.png)', backgroundSize: '100% 100%', backgroundPosition: 'top left', backgroundRepeat: 'no-repeat', position: 'absolute', top: '0', left: '0' }}>
+      <div className="relative w-[816px] h-[535px] m-0" style={{ backgroundImage: 'url(https://gscpermits.com/blank_permit.png)', backgroundSize: '100% 100%', backgroundPosition: 'top left', backgroundRepeat: 'no-repeat', position: 'absolute', top: '0', left: '0' }}>
         {/* Season */}
         <div className="absolute top-[185px] left-[45px] text-center">
           <div className="text-[18px] font-bold">'25 - '26</div>

@@ -1,7 +1,7 @@
 'use client'
 
 import { useSearchParams, useRouter } from 'next/navigation'
-import { useState, useEffect, Suspense } from 'react'
+import { useState, useEffect, Suspense, useRef } from 'react'
 // import TemporaryPermit from '@/components/TemporaryPermit' // No longer needed - using screenshot
 
 function PaymentConfirmationContent() {
@@ -10,6 +10,8 @@ function PaymentConfirmationContent() {
   const [isUpdating, setIsUpdating] = useState(true)
   const [updateStatus, setUpdateStatus] = useState<'updating' | 'success' | 'error'>('updating')
   const [userData, setUserData] = useState<any>(null)
+  const [showPermit, setShowPermit] = useState(false)
+  const hasInitialized = useRef(false)
   
   const userId = searchParams.get('userId')
 
@@ -90,12 +92,16 @@ function PaymentConfirmationContent() {
             </style>
           </head>
           <body>
-            <img src="${userData.permitScreenshot}" alt="Temporary Shellfish Permit" class="permit-image" />
+            <img src="${userData.permitScreenshot}" alt="Temporary Shellfish Permit" class="permit-image" onload="window.print();" />
+            <script>
+              window.onfocus = function() { 
+                setTimeout(function() { window.close(); }, 300); 
+              }
+            </script>
           </body>
         </html>
         `)
         printWindow.document.close()
-        printWindow.print()
       }
     }
   }
@@ -105,6 +111,17 @@ function PaymentConfirmationContent() {
       router.push('/')
       return
     }
+
+    // Prevent double execution
+    if (hasInitialized.current) {
+      return
+    }
+    hasInitialized.current = true
+
+    // Set a 3-second timeout before showing the permit
+    setTimeout(() => {
+      setShowPermit(true)
+    }, 3000)
 
     // Fetch user data and update payment status
     const initializePage = async () => {
@@ -138,46 +155,56 @@ function PaymentConfirmationContent() {
           throw new Error('Failed to update payment status')
         }
 
-        // Now capture screenshot of the permit (after payment is updated with permit number)
-        let screenshotBlobUrl = null
-        try {
-          const screenshotResponse = await fetch('/api/capture-permit-screenshot', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              userId,
-              userData: currentUserData,
-            }),
-          })
-
-          if (screenshotResponse.ok) {
-            const screenshotData = await screenshotResponse.json()
-            screenshotBlobUrl = screenshotData.blobUrl
-            console.log('Permit screenshot uploaded to Vercel Blob:', screenshotBlobUrl)
-            
-            // Update the user record with the blob URL
-            await fetch('/api/update-payment', {
+        // Get the updated user data from the response
+        const updateResult = await updateResponse.json()
+        
+        // Fetch updated user data to check if screenshot already exists
+        const updatedUserData = await fetchUserData()
+        
+        // Now capture screenshot of the permit only if it doesn't already exist
+        if (!updatedUserData?.permitScreenshot) {
+          let screenshotBlobUrl = null
+          try {
+            const screenshotResponse = await fetch('/api/capture-permit-screenshot', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
               },
               body: JSON.stringify({
                 userId,
-                paymentId: `payment_${Date.now()}`,
-                permitScreenshot: screenshotBlobUrl,
+                userData: updatedUserData,
               }),
             })
-            
-            // Refresh user data to get the updated screenshot URL
-            await fetchUserData()
-          } else {
-            console.warn('Failed to capture permit screenshot, but payment was successful')
+
+            if (screenshotResponse.ok) {
+              const screenshotData = await screenshotResponse.json()
+              screenshotBlobUrl = screenshotData.blobUrl
+              console.log('Permit screenshot uploaded to Vercel Blob:', screenshotBlobUrl)
+              
+              // Update the user record with the blob URL
+              await fetch('/api/update-payment', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  userId,
+                  paymentId: `payment_${Date.now()}`,
+                  permitScreenshot: screenshotBlobUrl,
+                }),
+              })
+              
+              // Refresh user data to get the updated screenshot URL
+              await fetchUserData()
+            } else {
+              console.warn('Failed to capture permit screenshot, but payment was successful')
+            }
+          } catch (screenshotError) {
+            console.warn('Error capturing permit screenshot:', screenshotError)
+            // Don't fail the entire process if screenshot fails
           }
-        } catch (screenshotError) {
-          console.warn('Error capturing permit screenshot:', screenshotError)
-          // Don't fail the entire process if screenshot fails
+        } else {
+          console.log('Screenshot already exists, skipping creation')
         }
 
         setUpdateStatus('success')
@@ -205,7 +232,9 @@ function PaymentConfirmationContent() {
   useEffect(() => {
     console.log('Payment confirmation page state:', { 
       isUpdating, 
-      updateStatus, 
+      updateStatus,
+      showPermit,
+      hasScreenshot: !!userData?.permitScreenshot,
       userData: userData ? { 
         paymentCompleted: userData.paymentCompleted, 
         permitScreenshot: userData.permitScreenshot,
@@ -213,7 +242,8 @@ function PaymentConfirmationContent() {
         paymentDate: userData.paymentDate
       } : null 
     })
-  }, [isUpdating, updateStatus, userData])
+    console.log('Should show permit:', showPermit && !!userData?.permitScreenshot)
+  }, [isUpdating, updateStatus, userData, showPermit])
 
   if (!userId) {
     return (
@@ -303,7 +333,7 @@ function PaymentConfirmationContent() {
                   <div className="text-center">
             {/* Temporary Permit Screenshot */}
             <div className="mb-6">
-              {userData?.paymentCompleted && userData?.permitScreenshot ? (
+              {showPermit && userData?.permitScreenshot ? (
                 <div className="flex justify-center">
                   <img 
                     src={userData.permitScreenshot}
@@ -323,8 +353,9 @@ function PaymentConfirmationContent() {
                   </div>
                 </div>
               ) : (
-                <div className="text-center text-gray-500 py-8">
-                  <p>Please wait, your temporary permit is being generated...</p>
+                <div className="text-center py-8">
+                  <p className="text-gray-500 mb-4">Please wait, your temporary permit is being generated...</p>
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 mx-auto" style={{ borderColor: 'rgb(59, 102, 126)' }}></div>
                 </div>
               )}
             </div>
@@ -337,7 +368,8 @@ function PaymentConfirmationContent() {
               <div className="space-y-4 mt-4">
                 <button
                   onClick={printTemporaryPermit}
-                  className="w-full text-white py-4 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 font-medium text-lg shadow-lg transform hover:scale-105 transition-all duration-200"
+                  disabled={!showPermit || !userData?.permitScreenshot}
+                  className="w-full text-white py-4 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 font-medium text-lg shadow-lg transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                   style={{ 
                     backgroundColor: 'rgba(18, 62, 45, 0.9)'
                   }}
@@ -345,7 +377,7 @@ function PaymentConfirmationContent() {
                   Print Temporary Permit
                 </button>
                 <button
-                  onClick={() => router.push('/')}
+                  onClick={() => window.open('https://www.greenwichct.gov/696/Shellfish-Commission', '_blank')}
                   className="w-full text-white py-4 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 font-medium text-lg shadow-lg transform hover:scale-105 transition-all duration-200"
                   style={{ 
                     backgroundColor: 'rgb(85, 85, 85)'
@@ -394,7 +426,7 @@ function PaymentConfirmationContent() {
               <div className="p-12">
                 <div className="bg-white rounded-lg p-6 text-center">
                   <button
-                    onClick={() => router.push('/')}
+                    onClick={() => window.open('https://www.greenwichct.gov/696/Shellfish-Commission', '_blank')}
                     className="w-full text-white py-4 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 font-medium text-lg shadow-lg transform hover:scale-105 transition-all duration-200"
                     style={{ 
                       backgroundColor: 'rgba(18, 62, 45, 0.9)'
