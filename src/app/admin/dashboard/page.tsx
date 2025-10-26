@@ -24,16 +24,6 @@ export default function AdminDashboard() {
   const [filterPayment, setFilterPayment] = useState('all')
   const router = useRouter()
 
-  useEffect(() => {
-    const token = localStorage.getItem('adminToken')
-    if (!token) {
-      router.push('/admin/login')
-      return
-    }
-
-    fetchUsers()
-  }, [router])
-
   const fetchUsers = async () => {
     try {
       const token = localStorage.getItem('adminToken')
@@ -61,6 +51,17 @@ export default function AdminDashboard() {
       setIsLoading(false)
     }
   }
+
+  useEffect(() => {
+    const token = localStorage.getItem('adminToken')
+    if (!token) {
+      router.push('/admin/login')
+      return
+    }
+
+    fetchUsers()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const handleLogout = () => {
     localStorage.removeItem('adminToken')

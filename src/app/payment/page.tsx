@@ -18,7 +18,7 @@ function PaymentContent() {
     if (!userId || !amount) {
       router.push('/')
     }
-  }, [userId, amount, router])
+  }, [userId, amount])
 
   const handlePayment = async () => {
     setIsProcessing(true)

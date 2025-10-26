@@ -217,33 +217,8 @@ function PaymentConfirmationContent() {
     }
 
     initializePage()
-  }, [userId, router])
+  }, [userId])
 
-  // Check if payment is already completed when userData is loaded
-  useEffect(() => {
-    if (userData?.paymentCompleted && isUpdating) {
-      console.log('Payment already completed, setting success status')
-      setUpdateStatus('success')
-      setIsUpdating(false)
-    }
-  }, [userData, isUpdating])
-
-  // Debug effect to see what's happening
-  useEffect(() => {
-    console.log('Payment confirmation page state:', { 
-      isUpdating, 
-      updateStatus,
-      showPermit,
-      hasScreenshot: !!userData?.permitScreenshot,
-      userData: userData ? { 
-        paymentCompleted: userData.paymentCompleted, 
-        permitScreenshot: userData.permitScreenshot,
-        permitNumber: userData.permitNumber,
-        paymentDate: userData.paymentDate
-      } : null 
-    })
-    console.log('Should show permit:', showPermit && !!userData?.permitScreenshot)
-  }, [isUpdating, updateStatus, userData, showPermit])
 
   if (!userId) {
     return (
@@ -287,11 +262,10 @@ function PaymentConfirmationContent() {
                 Your purchase was completed successfully.
               </p>
             </div>
-
           </>
         )}
 
-        {!isUpdating && updateStatus === 'success' && (
+        {updateStatus === 'success' && (
           <div className="max-w-4xl mx-auto">
             <div className="rounded-xl shadow-xl border overflow-hidden" style={{ backgroundColor: 'rgb(59, 102, 126)', borderColor: 'rgb(85, 85, 85)' }}>
               <div className="p-12">
@@ -381,33 +355,6 @@ function PaymentConfirmationContent() {
                 </div>
               </div>
             </div>
-        )}
-
-        {updateStatus === 'error' && (
-          <>
-            {/* Hero Section */}
-            <div className="text-center mb-12">
-              <div className="text-red-600 text-6xl mb-4">⚠️</div>
-              <h1 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: 'rgb(85, 85, 85)', fontFamily: 'EB Garamond, serif' }}>
-                Payment Update Failed
-              </h1>
-              <p className="text-xl mb-8 max-w-3xl mx-auto text-left" style={{ color: 'rgb(85, 85, 85)' }}>
-                There was an error updating your payment status. Please contact support.
-              </p>
-            </div>
-
-            {/* Error Details Section */}
-            <div className="max-w-4xl mx-auto mb-8">
-              <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-red-800 mb-2">What to do next:</h3>
-                <ul className="text-sm text-red-700 space-y-1 text-left">
-                  <li>• Contact the Greenwich Shellfish Commission</li>
-                  <li>• Provide your payment reference: {userId}</li>
-                  <li>• They will manually verify and activate your permit</li>
-                </ul>
-              </div>
-            </div>
-          </>
         )}
 
         {updateStatus === 'error' && (
