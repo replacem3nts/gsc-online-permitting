@@ -237,7 +237,7 @@ export default function PermitApplicationForm() {
                       }}
                     >
                       <option value="">Month</option>
-                      {months.map(month => (
+                      {months.map((month: number) => (
                         <option key={month} value={month}>{month.toString().padStart(2, '0')}</option>
                       ))}
                     </select>
@@ -253,7 +253,7 @@ export default function PermitApplicationForm() {
                       }}
                     >
                       <option value="">Day</option>
-                      {days.map(day => (
+                      {days.map((day: number) => (
                         <option key={day} value={day}>{day.toString().padStart(2, '0')}</option>
                       ))}
                     </select>
@@ -269,7 +269,7 @@ export default function PermitApplicationForm() {
                       }}
                     >
                       <option value="">Year</option>
-                      {birthYears.map(year => (
+                      {birthYears.map((year: number) => (
                         <option key={year} value={year}>{year}</option>
                       ))}
                     </select>
@@ -360,7 +360,7 @@ export default function PermitApplicationForm() {
                     }}
                   >
                     <option value="">Select eye color</option>
-                    {eyeColors.map(color => (
+                    {eyeColors.map((color: string) => (
                       <option key={color} value={color}>{color}</option>
                     ))}
                   </select>
@@ -472,7 +472,7 @@ export default function PermitApplicationForm() {
                         }}
                       >
                         <option value="">Select State</option>
-                        {states.map((state) => (
+                        {states.map((state: { value: string; label: string }) => (
                           <option key={state.value} value={state.value}>
                             {state.value}
                           </option>
@@ -508,7 +508,7 @@ export default function PermitApplicationForm() {
                 Permit Type
               </h2>
               <div className="space-y-2">
-                  {permitTypes.map((permit) => (
+                  {permitTypes.map((permit: { value: string; label: string; price: string }) => (
                     <label key={permit.value} className="flex items-center p-3 border rounded-md hover:bg-gray-50 cursor-pointer" style={{ borderColor: 'rgb(85, 85, 85)' }}>
                       <input
                         {...register('permitType')}

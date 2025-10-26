@@ -95,7 +95,7 @@ export default function AdminDashboard() {
     }
   }
 
-  const filteredUsers = users.filter(user => {
+  const filteredUsers = users.filter((user: User) => {
     const matchesSearch = 
       user.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -111,11 +111,11 @@ export default function AdminDashboard() {
 
   const stats = {
     total: users.length,
-    paid: users.filter(u => u.paymentCompleted).length,
-    unpaid: users.filter(u => !u.paymentCompleted).length,
-    regular: users.filter(u => u.permitType === 'regular').length,
-    senior: users.filter(u => u.permitType === 'senior').length,
-    junior: users.filter(u => u.permitType === 'junior').length,
+    paid: users.filter((u: User) => u.paymentCompleted).length,
+    unpaid: users.filter((u: User) => !u.paymentCompleted).length,
+    regular: users.filter((u: User) => u.permitType === 'regular').length,
+    senior: users.filter((u: User) => u.permitType === 'senior').length,
+    junior: users.filter((u: User) => u.permitType === 'junior').length,
   }
 
   if (isLoading) {
@@ -317,7 +317,7 @@ export default function AdminDashboard() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredUsers.map((user) => (
+                {filteredUsers.map((user: User) => (
                   <tr key={user.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">

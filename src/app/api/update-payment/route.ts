@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
       // Convert all permit numbers to integers and find the max
       const permitNumbers = existingPermits
         .map((p: { permitNumber: string | null }) => parseInt(p.permitNumber || '0'))
-        .filter(n => !isNaN(n))
+        .filter((n: number) => !isNaN(n))
       
       // Generate next sequential permit number
       if (permitNumbers.length > 0) {
