@@ -59,15 +59,11 @@ export default function TemporaryPermit({
               </div>
               <div className="border-r-2 border-white p-1.5 text-left bg-gray-50" style={{ border: '1px solid black' }}>
                 <div className="text-xs text-gray-700 mb-0.5 font-bold uppercase tracking-wide">Issued</div>
-                <div className="text-base font-bold pl-2">{userData?.paymentDate ? new Date(userData.paymentDate).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' }) : new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' })}</div>
+                <div className="text-base font-bold pl-2">{userData?.paymentDate}</div>
               </div>
               <div className="p-1.5 text-left bg-gray-50" style={{ border: '1px solid black' }}>
                 <div className="text-xs text-gray-700 mb-0.5 font-bold uppercase tracking-wide">Expires</div>
-                <div className="text-base font-bold pl-2">{userData?.tempPermitExpirationDate ? new Date(userData.tempPermitExpirationDate).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' }) : (() => {
-                  const expirationDate = new Date();
-                  expirationDate.setDate(expirationDate.getDate() + 14);
-                  return expirationDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' });
-                })()}</div>
+                <div className="text-base font-bold pl-2">{userData?.tempPermitExpirationDate}</div>
               </div>
             </div>
           </div>
@@ -92,7 +88,7 @@ export default function TemporaryPermit({
             {/* Name spanning full width */}
             <div className="border-2 border-white p-1.5 text-left bg-gray-50 mb-4" style={{ border: '1px solid black' }}>
               <div className="text-xs text-gray-700 mb-0.5 font-bold uppercase tracking-wide">Name</div>
-              <div className="text-base font-bold pl-2">{userData?.firstName} {userData?.lastName}</div>
+              <div className="text-base font-bold pl-2">{`${userData?.firstName} ${userData?.lastName}`}</div>
             </div>
             
             {/* Three fields in a row */}

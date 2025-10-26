@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
-import TemporaryPermit from '@/components/TemporaryPermit'
+import { ShellfishPermit } from '@/components/NewTemporaryPermit'
 
 function PermitContent({ params }: { params: { userId: string } }) {
   const router = useRouter()
@@ -12,22 +12,22 @@ function PermitContent({ params }: { params: { userId: string } }) {
   
   const userId = params.userId
 
-  // Calculate expiration date (2 weeks from now)
-  const getExpirationDate = () => {
-    const now = new Date()
-    const expirationDate = new Date(now.getTime() + (14 * 24 * 60 * 60 * 1000)) // 14 days
-    return expirationDate.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
-    })
+  // Format dates for ShellfishPermit component
+  const getFormattedPaymentDate = () => {
+    return userData?.paymentDate ? new Date(userData.paymentDate).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' }) : new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' })
   }
 
-  // Format date of birth
+  const getFormattedExpirationDate = () => {
+    return userData?.tempPermitExpirationDate ? new Date(userData.tempPermitExpirationDate).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' }) : (() => {
+      const expirationDate = new Date()
+      expirationDate.setDate(expirationDate.getDate() + 14)
+      return expirationDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' })
+    })()
+  }
+
   const formatDateOfBirth = () => {
-    if (!userData) return ''
-    const { dateOfBirthMonth, dateOfBirthDay, dateOfBirthYear } = userData
-    return `${dateOfBirthMonth}/${dateOfBirthDay}/${dateOfBirthYear}`
+    if (!userData?.dateOfBirthMonth || !userData?.dateOfBirthDay || !userData?.dateOfBirthYear) return 'N/A'
+    return `${userData.dateOfBirthMonth.toString().padStart(2, '0')}/${userData.dateOfBirthDay.toString().padStart(2, '0')}/${userData.dateOfBirthYear}`
   }
 
   // Fetch user data
@@ -87,13 +87,49 @@ function PermitContent({ params }: { params: { userId: string } }) {
   }
 
   return (
-    <TemporaryPermit
-      userData={userData}
-      userId={userId}
-      amount={userData.paymentCompleted ? '25.00' : '0.00'}
-      getExpirationDate={getExpirationDate}
-      formatDateOfBirth={formatDateOfBirth}
-    />
+    <div className="bg-gray-800">
+      <div className="relative w-[816px] h-[535px] m-0" style={{ backgroundImage: 'url(/blank_permit.png)', backgroundSize: '100% 100%', backgroundPosition: 'top left', backgroundRepeat: 'no-repeat', position: 'absolute', top: '0', left: '0' }}>
+        {/* Season */}
+        <div className="absolute top-[185px] left-[45px] text-center">
+          <div className="text-[18px] font-bold">'25 - '26</div>
+        </div>
+
+        {/* Permit Number */}
+        <div className="absolute top-[185px] left-[235px] text-center">
+          <div className="text-[18px] font-bold">{userData?.permitNumber || '001'}</div>
+        </div>
+
+        {/* Issued Date */}
+        <div className="absolute top-[260px] left-[45px] text-center">
+          <div className="text-[16px] font-bold">{getFormattedPaymentDate()}</div>
+        </div>
+
+        {/* Expires Date */}
+        <div className="absolute top-[260px] left-[235px] text-center">
+          <div className="text-[16px] font-bold">{getFormattedExpirationDate()}</div>
+        </div>
+
+        {/* Name */}
+        <div className="absolute top-[105px] left-[450px]">
+          <div className="text-[16px] font-bold">{`${userData?.firstName} ${userData?.lastName}`}</div>
+        </div>
+
+        {/* Height */}
+        <div className="absolute top-[175px] left-[450px] text-center">
+          <div className="text-[16px] font-bold">{userData?.height}</div>
+        </div>
+
+        {/* D.O.B. */}
+        <div className="absolute top-[175px] left-[570px] text-center">
+          <div className="text-[14px] font-bold">{formatDateOfBirth()}</div>
+        </div>
+
+        {/* Eye Color */}
+        <div className="absolute top-[175px] left-[695px] text-center">
+          <div className="text-[16px] font-bold">{userData?.eyeColor}</div>
+        </div>
+      </div>
+    </div>
   )
 }
 

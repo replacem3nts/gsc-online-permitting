@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { put } from '@vercel/blob';
-import { generatePermitImage } from '@/components/PermitImage';
+import { ImageResponse } from '@vercel/og';
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,26 +13,205 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Generate the permit image using the component
-    const imageResponse = generatePermitImage(userData);
+    // Format dates for the ShellfishPermit component
+    const formattedPaymentDate = userData?.paymentDate ? new Date(userData.paymentDate).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' }) : new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' });
+    
+    const formattedExpirationDate = userData?.tempPermitExpirationDate ? new Date(userData.tempPermitExpirationDate).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' }) : (() => {
+      const expirationDate = new Date();
+      expirationDate.setDate(expirationDate.getDate() + 14);
+      return expirationDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' });
+    })();
+
+    const formatDateOfBirth = () => {
+      if (!userData?.dateOfBirthMonth || !userData?.dateOfBirthDay || !userData?.dateOfBirthYear) return 'N/A';
+      return `${userData.dateOfBirthMonth.toString().padStart(2, '0')}/${userData.dateOfBirthDay.toString().padStart(2, '0')}/${userData.dateOfBirthYear}`;
+    };
+
+    // Generate permit image using background image with absolute positioned text
+    const imageResponse = new ImageResponse(
+      {
+        type: 'div',
+        props: {
+          style: {
+            width: '816px',
+            height: '535px',
+            backgroundImage: 'url(/blank_permit.png)',
+            backgroundSize: '100% 100%',
+            backgroundPosition: 'top left',
+            backgroundRepeat: 'no-repeat',
+            position: 'relative',
+            display: 'flex',
+            fontFamily: 'Arial, sans-serif',
+          },
+          children: [
+            // Season
+            {
+              type: 'div',
+              props: {
+                style: {
+                  position: 'absolute',
+                  top: '185px',
+                  left: '45px',
+                  textAlign: 'center',
+                  fontSize: '18px',
+                  fontWeight: 'bold',
+                },
+                children: "'25 - '26"
+              }
+            },
+            // Permit Number
+            {
+              type: 'div',
+              props: {
+                style: {
+                  position: 'absolute',
+                  top: '185px',
+                  left: '235px',
+                  textAlign: 'center',
+                  fontSize: '18px',
+                  fontWeight: 'bold',
+                },
+                children: userData?.permitNumber || '001'
+              }
+            },
+            // Issued Date
+            {
+              type: 'div',
+              props: {
+                style: {
+                  position: 'absolute',
+                  top: '260px',
+                  left: '45px',
+                  textAlign: 'center',
+                  fontSize: '16px',
+                  fontWeight: 'bold',
+                },
+                children: formattedPaymentDate
+              }
+            },
+            // Expires Date
+            {
+              type: 'div',
+              props: {
+                style: {
+                  position: 'absolute',
+                  top: '260px',
+                  left: '235px',
+                  textAlign: 'center',
+                  fontSize: '16px',
+                  fontWeight: 'bold',
+                },
+                children: formattedExpirationDate
+              }
+            },
+            // Name
+            {
+              type: 'div',
+              props: {
+                style: {
+                  position: 'absolute',
+                  top: '105px',
+                  left: '450px',
+                  fontSize: '16px',
+                  fontWeight: 'bold',
+                },
+                children: `${userData?.firstName} ${userData?.lastName}`
+              }
+            },
+            // Height
+            {
+              type: 'div',
+              props: {
+                style: {
+                  position: 'absolute',
+                  top: '175px',
+                  left: '450px',
+                  textAlign: 'center',
+                  fontSize: '16px',
+                  fontWeight: 'bold',
+                },
+                children: userData?.height
+              }
+            },
+            // D.O.B.
+            {
+              type: 'div',
+              props: {
+                style: {
+                  position: 'absolute',
+                  top: '175px',
+                  left: '570px',
+                  textAlign: 'center',
+                  fontSize: '14px',
+                  fontWeight: 'bold',
+                },
+                children: formatDateOfBirth()
+              }
+            },
+            // Eye Color
+            {
+              type: 'div',
+              props: {
+                style: {
+                  position: 'absolute',
+                  top: '175px',
+                  left: '695px',
+                  textAlign: 'center',
+                  fontSize: '16px',
+                  fontWeight: 'bold',
+                },
+                children: userData?.eyeColor
+              }
+            }
+          ]
+        }
+      },
+      {
+        width: 816,
+        height: 535,
+      }
+    );
 
     // Convert the image response to buffer
     const arrayBuffer = await imageResponse.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    // Upload to Vercel Blob
-    const blob = await put(`permit_${userId}_screenshot.png`, buffer, {
-      access: 'public',
-      contentType: 'image/png',
-    });
+    // Check if Vercel Blob token is available
+    if (process.env.BLOB_READ_WRITE_TOKEN) {
+      // Upload to Vercel Blob
+      const blob = await put(`permit_${userId}_screenshot.png`, buffer, {
+        access: 'public',
+        contentType: 'image/png',
+      });
 
-    console.log(`Screenshot uploaded to Vercel Blob: ${blob.url}`);
-    
-    return NextResponse.json({ 
-      success: true, 
-      screenshotPath: `permit_${userId}_screenshot.png`,
-      blobUrl: blob.url
-    });
+      console.log(`Screenshot uploaded to Vercel Blob: ${blob.url}`);
+      
+      return NextResponse.json({ 
+        success: true, 
+        screenshotPath: `permit_${userId}_screenshot.png`,
+        blobUrl: blob.url
+      });
+    } else {
+      // Fallback: Save to local filesystem for development
+      const fs = await import('fs');
+      const path = await import('path');
+      
+      const screenshotsDir = path.join(process.cwd(), 'public', 'screenshots');
+      if (!fs.existsSync(screenshotsDir)) {
+        fs.mkdirSync(screenshotsDir, { recursive: true });
+      }
+      
+      const screenshotPath = path.join(screenshotsDir, `permit_${userId}_screenshot.png`);
+      fs.writeFileSync(screenshotPath, buffer);
+      
+      console.log(`Screenshot saved locally: ${screenshotPath}`);
+      
+      return NextResponse.json({ 
+        success: true, 
+        screenshotPath: `permit_${userId}_screenshot.png`,
+        blobUrl: `/screenshots/permit_${userId}_screenshot.png`
+      });
+    }
 
   } catch (error) {
     console.error('Error generating permit image:', error);
