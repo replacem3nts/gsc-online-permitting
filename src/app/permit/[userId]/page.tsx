@@ -2,7 +2,6 @@
 
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
-import { ShellfishPermit } from '@/components/NewTemporaryPermit'
 
 function PermitContent({ params }: { params: { userId: string } }) {
   const router = useRouter()
