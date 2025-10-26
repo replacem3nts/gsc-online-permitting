@@ -10,10 +10,26 @@ const eyeColors = [
 ]
 
 const permitTypes = [
-  { value: 'regular', label: 'Regular Permit', price: '$25' },
-  { value: 'senior', label: 'Senior Permit (65+)', price: '$15' },
-  { value: 'junior', label: 'Junior Permit (Under 16)', price: '$10' }
+  { value: 'regular', label: 'Regular Permit', price: '$15' },
+  { value: 'senior', label: 'Senior Permit (65+)', price: '$10' },
+  { value: 'junior', label: 'Junior Permit (Ages 5-13)', price: '$1' }
 ]
+
+// Generate years from current year minus 5 down to 1900
+const generateBirthYears = () => {
+  const currentYear = new Date().getFullYear()
+  const years = []
+  for (let year = currentYear - 5; year >= 1900; year--) {
+    years.push(year)
+  }
+  return years
+}
+
+const birthYears = generateBirthYears()
+
+// Generate months and days for date of birth
+const months = Array.from({ length: 12 }, (_, i) => i + 1)
+const days = Array.from({ length: 31 }, (_, i) => i + 1)
 
 const states = [
   { value: 'AL', label: 'Alabama' },
@@ -80,6 +96,7 @@ export default function PermitApplicationForm() {
     watch,
   } = useForm<PermitApplicationData>({
     resolver: zodResolver(permitApplicationSchema),
+    defaultValues: { permitType: 'regular' }
   })
 
   const selectedPermitType = watch('permitType')
@@ -117,7 +134,7 @@ export default function PermitApplicationForm() {
       setSubmitSuccess(true)
 
       // Redirect to payment page with user information
-      const amount = selectedPermit?.price.replace('$', '') || '25'
+      const amount = selectedPermit?.price.replace('$', '') || '15'
       const params = new URLSearchParams({
         userId: result.userId,
         firstName: result.firstName,
@@ -179,14 +196,11 @@ export default function PermitApplicationForm() {
                     id="firstName"
                     className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:border-transparent h-10"
                     style={{ 
-                      borderColor: 'rgb(85, 85, 85)', 
+                      borderColor: errors.firstName ? 'rgb(239, 68, 68)' : 'rgb(85, 85, 85)', 
                       color: 'rgb(85, 85, 85)'
                     }}
                     placeholder="Enter your first name"
                   />
-                  {errors.firstName && (
-                    <p className="mt-1 text-sm text-red-600">{errors.firstName.message}</p>
-                  )}
                 </div>
 
                 <div>
@@ -199,14 +213,11 @@ export default function PermitApplicationForm() {
                     id="lastName"
                     className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:border-transparent h-10"
                     style={{ 
-                      borderColor: 'rgb(85, 85, 85)', 
+                      borderColor: errors.lastName ? 'rgb(239, 68, 68)' : 'rgb(85, 85, 85)', 
                       color: 'rgb(85, 85, 85)'
                     }}
                     placeholder="Enter your last name"
                   />
-                  {errors.lastName && (
-                    <p className="mt-1 text-sm text-red-600">{errors.lastName.message}</p>
-                  )}
                 </div>
               </div>
 
@@ -216,58 +227,52 @@ export default function PermitApplicationForm() {
                 </label>
                 <div className="flex gap-2 max-w-md">
                   <div className="flex-1">
-                    <input
+                    <select
                       {...register('dateOfBirthMonth', { valueAsNumber: true })}
-                      type="number"
                       id="dateOfBirthMonth"
-                      min="1"
-                      max="12"
                       className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:border-transparent h-10"
                       style={{ 
-                        borderColor: 'rgb(85, 85, 85)', 
+                        borderColor: errors.dateOfBirthMonth ? 'rgb(239, 68, 68)' : 'rgb(85, 85, 85)', 
                         color: 'rgb(85, 85, 85)'
                       }}
-                      placeholder="MM"
-                    />
-                    {errors.dateOfBirthMonth && (
-                      <p className="mt-1 text-sm text-red-600">{errors.dateOfBirthMonth.message}</p>
-                    )}
+                    >
+                      <option value="">Month</option>
+                      {months.map(month => (
+                        <option key={month} value={month}>{month.toString().padStart(2, '0')}</option>
+                      ))}
+                    </select>
                   </div>
                   <div className="flex-1">
-                    <input
+                    <select
                       {...register('dateOfBirthDay', { valueAsNumber: true })}
-                      type="number"
                       id="dateOfBirthDay"
-                      min="1"
-                      max="31"
                       className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:border-transparent h-10"
                       style={{ 
-                        borderColor: 'rgb(85, 85, 85)', 
+                        borderColor: errors.dateOfBirthDay ? 'rgb(239, 68, 68)' : 'rgb(85, 85, 85)', 
                         color: 'rgb(85, 85, 85)'
                       }}
-                      placeholder="DD"
-                    />
-                    {errors.dateOfBirthDay && (
-                      <p className="mt-1 text-sm text-red-600">{errors.dateOfBirthDay.message}</p>
-                    )}
+                    >
+                      <option value="">Day</option>
+                      {days.map(day => (
+                        <option key={day} value={day}>{day.toString().padStart(2, '0')}</option>
+                      ))}
+                    </select>
                   </div>
                   <div className="flex-1">
-                    <input
+                    <select
                       {...register('dateOfBirthYear', { valueAsNumber: true })}
-                      type="number"
                       id="dateOfBirthYear"
-                      min="1900"
-                      max={new Date().getFullYear()}
                       className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:border-transparent h-10"
                       style={{ 
-                        borderColor: 'rgb(85, 85, 85)', 
+                        borderColor: errors.dateOfBirthYear ? 'rgb(239, 68, 68)' : 'rgb(85, 85, 85)', 
                         color: 'rgb(85, 85, 85)'
                       }}
-                      placeholder="YYYY"
-                    />
-                    {errors.dateOfBirthYear && (
-                      <p className="mt-1 text-sm text-red-600">{errors.dateOfBirthYear.message}</p>
-                    )}
+                    >
+                      <option value="">Year</option>
+                      {birthYears.map(year => (
+                        <option key={year} value={year}>{year}</option>
+                      ))}
+                    </select>
                   </div>
                 </div>
               </div>
@@ -296,14 +301,11 @@ export default function PermitApplicationForm() {
                         max="7"
                         className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:border-transparent h-10"
                         style={{ 
-                          borderColor: 'rgb(85, 85, 85)', 
+                          borderColor: errors.heightFeet ? 'rgb(239, 68, 68)' : 'rgb(85, 85, 85)', 
                           color: 'rgb(85, 85, 85)'
                         }}
                         placeholder="ft."
                       />
-                      {errors.heightFeet && (
-                        <p className="mt-1 text-sm text-red-600">{errors.heightFeet.message}</p>
-                      )}
                     </div>
                     <div className="flex-1">
                       <input
@@ -314,14 +316,11 @@ export default function PermitApplicationForm() {
                         max="12"
                         className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:border-transparent h-10"
                         style={{ 
-                          borderColor: 'rgb(85, 85, 85)', 
+                          borderColor: errors.heightInches ? 'rgb(239, 68, 68)' : 'rgb(85, 85, 85)', 
                           color: 'rgb(85, 85, 85)'
                         }}
                         placeholder="in."
                       />
-                      {errors.heightInches && (
-                        <p className="mt-1 text-sm text-red-600">{errors.heightInches.message}</p>
-                      )}
                     </div>
                   </div>
                 </div>
@@ -335,7 +334,7 @@ export default function PermitApplicationForm() {
                     id="sex"
                     className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:border-transparent h-10"
                     style={{ 
-                      borderColor: 'rgb(85, 85, 85)', 
+                      borderColor: errors.sex ? 'rgb(239, 68, 68)' : 'rgb(85, 85, 85)', 
                       color: 'rgb(85, 85, 85)'
                     }}
                   >
@@ -345,9 +344,6 @@ export default function PermitApplicationForm() {
                     <option value="other">Other</option>
                     <option value="prefer_not_to_say">Prefer not to say</option>
                   </select>
-                  {errors.sex && (
-                    <p className="mt-1 text-sm text-red-600">{errors.sex.message}</p>
-                  )}
                 </div>
 
                 <div>
@@ -359,7 +355,7 @@ export default function PermitApplicationForm() {
                     id="eyeColor"
                     className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:border-transparent h-10"
                     style={{ 
-                      borderColor: 'rgb(85, 85, 85)', 
+                      borderColor: errors.eyeColor ? 'rgb(239, 68, 68)' : 'rgb(85, 85, 85)', 
                       color: 'rgb(85, 85, 85)'
                     }}
                   >
@@ -368,9 +364,6 @@ export default function PermitApplicationForm() {
                       <option key={color} value={color}>{color}</option>
                     ))}
                   </select>
-                  {errors.eyeColor && (
-                    <p className="mt-1 text-sm text-red-600">{errors.eyeColor.message}</p>
-                  )}
                 </div>
               </div>
             </div>
@@ -395,14 +388,11 @@ export default function PermitApplicationForm() {
                     id="email"
                     className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:border-transparent h-10"
                     style={{ 
-                      borderColor: 'rgb(85, 85, 85)', 
+                      borderColor: errors.email ? 'rgb(239, 68, 68)' : 'rgb(85, 85, 85)', 
                       color: 'rgb(85, 85, 85)'
                     }}
                     placeholder="Enter your email address"
                   />
-                  {errors.email && (
-                    <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
-                  )}
                 </div>
 
                 <div>
@@ -415,14 +405,11 @@ export default function PermitApplicationForm() {
                     id="phoneNumber"
                     className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:border-transparent h-10"
                     style={{ 
-                      borderColor: 'rgb(85, 85, 85)', 
+                      borderColor: errors.phoneNumber ? 'rgb(239, 68, 68)' : 'rgb(85, 85, 85)', 
                       color: 'rgb(85, 85, 85)'
                     }}
                     placeholder="Enter your phone number"
                   />
-                  {errors.phoneNumber && (
-                    <p className="mt-1 text-sm text-red-600">{errors.phoneNumber.message}</p>
-                  )}
                 </div>
               </div>
 
@@ -438,14 +425,11 @@ export default function PermitApplicationForm() {
                       id="addressLine1"
                       className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:border-transparent h-10"
                       style={{ 
-                        borderColor: 'rgb(85, 85, 85)', 
+                        borderColor: errors.addressLine1 ? 'rgb(239, 68, 68)' : 'rgb(85, 85, 85)', 
                         color: 'rgb(85, 85, 85)'
                       }}
                       placeholder="Street address, P.O. box, company name, c/o"
                     />
-                    {errors.addressLine1 && (
-                      <p className="mt-1 text-sm text-red-600">{errors.addressLine1.message}</p>
-                    )}
                   </div>
 
                   <div>
@@ -455,14 +439,11 @@ export default function PermitApplicationForm() {
                       id="addressLine2"
                       className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:border-transparent h-10"
                       style={{ 
-                        borderColor: 'rgb(85, 85, 85)', 
+                        borderColor: errors.addressLine2 ? 'rgb(239, 68, 68)' : 'rgb(85, 85, 85)', 
                         color: 'rgb(85, 85, 85)'
                       }}
                       placeholder="Apartment, suite, unit, building, floor, etc."
                     />
-                    {errors.addressLine2 && (
-                      <p className="mt-1 text-sm text-red-600">{errors.addressLine2.message}</p>
-                    )}
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -473,14 +454,11 @@ export default function PermitApplicationForm() {
                         id="town"
                         className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:border-transparent h-10"
                         style={{ 
-                          borderColor: 'rgb(85, 85, 85)', 
+                          borderColor: errors.town ? 'rgb(239, 68, 68)' : 'rgb(85, 85, 85)', 
                           color: 'rgb(85, 85, 85)'
                         }}
                         placeholder="Town or city"
                       />
-                      {errors.town && (
-                        <p className="mt-1 text-sm text-red-600">{errors.town.message}</p>
-                      )}
                     </div>
 
                     <div>
@@ -489,7 +467,7 @@ export default function PermitApplicationForm() {
                         id="state"
                         className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:border-transparent h-10"
                         style={{ 
-                          borderColor: 'rgb(85, 85, 85)', 
+                          borderColor: errors.state ? 'rgb(239, 68, 68)' : 'rgb(85, 85, 85)', 
                           color: 'rgb(85, 85, 85)'
                         }}
                       >
@@ -500,9 +478,6 @@ export default function PermitApplicationForm() {
                           </option>
                         ))}
                       </select>
-                      {errors.state && (
-                        <p className="mt-1 text-sm text-red-600">{errors.state.message}</p>
-                      )}
                     </div>
 
                     <div>
@@ -512,14 +487,11 @@ export default function PermitApplicationForm() {
                         id="zipCode"
                         className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:border-transparent h-10"
                         style={{ 
-                          borderColor: 'rgb(85, 85, 85)', 
+                          borderColor: errors.zipCode ? 'rgb(239, 68, 68)' : 'rgb(85, 85, 85)', 
                           color: 'rgb(85, 85, 85)'
                         }}
                         placeholder="Zip Code"
                       />
-                      {errors.zipCode && (
-                        <p className="mt-1 text-sm text-red-600">{errors.zipCode.message}</p>
-                      )}
                     </div>
                   </div>
                 </div>
@@ -533,19 +505,16 @@ export default function PermitApplicationForm() {
                 <div className="w-8 h-8 rounded-full flex items-center justify-center mr-3" style={{ backgroundColor: 'rgba(18, 62, 45, 0.1)' }}>
                   <span className="font-bold text-sm" style={{ color: 'rgba(18, 62, 45, 0.9)' }}>4</span>
                 </div>
-                Permit Type & Terms
+                Permit Type
               </h2>
-              <div>
-                <label className="block text-sm font-medium mb-3" style={{ color: 'rgb(85, 85, 85)' }}>
-                  Permit Type <span className="text-red-500">*</span>
-                </label>
-                <div className="space-y-2">
+              <div className="space-y-2">
                   {permitTypes.map((permit) => (
                     <label key={permit.value} className="flex items-center p-3 border rounded-md hover:bg-gray-50 cursor-pointer" style={{ borderColor: 'rgb(85, 85, 85)' }}>
                       <input
                         {...register('permitType')}
                         type="radio"
                         value={permit.value}
+                        defaultChecked={permit.value === 'regular'}
                         className="h-4 w-4 focus:ring-2 focus:border-transparent"
                         style={{ 
                           accentColor: 'rgba(18, 62, 45, 0.9)'
@@ -558,13 +527,9 @@ export default function PermitApplicationForm() {
                     </label>
                   ))}
                 </div>
-                {errors.permitType && (
-                  <p className="mt-1 text-sm text-red-600">{errors.permitType.message}</p>
-                )}
-              </div>
 
               <div className="space-y-4 mt-6">
-                <div className="flex items-start">
+                <div className={`flex items-start ${errors.termsAccepted ? 'ring-2 ring-red-500 rounded p-2' : ''}`}>
                   <input
                     {...register('termsAccepted')}
                     type="checkbox"
@@ -578,9 +543,6 @@ export default function PermitApplicationForm() {
                     I agree to the <a href="/terms" className="text-blue-600 hover:underline" target="_blank">Terms of Service</a> <span className="text-red-500">*</span>
                   </label>
                 </div>
-                {errors.termsAccepted && (
-                  <p className="mt-1 text-sm text-red-600">{errors.termsAccepted.message}</p>
-                )}
 
                 <div className="flex items-start">
                   <input
@@ -608,6 +570,13 @@ export default function PermitApplicationForm() {
               )}
 
               <div className="text-center">
+                {Object.keys(errors).length > 0 && (
+                  <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+                    <p className="text-sm text-red-600 font-medium">
+                      Please complete all required fields
+                    </p>
+                  </div>
+                )}
                 <button
                   type="submit"
                   disabled={isSubmitting}
@@ -632,7 +601,7 @@ export default function PermitApplicationForm() {
                 {selectedPermit && (
                   <div className="mt-4 p-4 bg-white rounded-lg border border-gray-200">
                     <p className="text-sm text-gray-600">
-                      Total amount due: <span className="font-bold text-lg text-blue-600">{selectedPermit.price}</span>
+                      Total amount due: <span className="font-bold text-lg" style={{ color: 'rgb(59, 102, 126)' }}>{selectedPermit.price}</span>
                     </p>
                     <p className="text-xs text-gray-500 mt-1">
                       Payment will be processed after form submission
