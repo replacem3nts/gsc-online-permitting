@@ -8,7 +8,7 @@ function PaymentConfirmationContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [isUpdating, setIsUpdating] = useState(true)
-  const [updateStatus, setUpdateStatus] = useState<'updating' | 'success' | 'error'>('updating')
+  const [updateStatus, setUpdateStatus] = useState<'updating' | 'success' | 'error'>('success')
   const [userData, setUserData] = useState<any>(null)
   const [showPermit, setShowPermit] = useState(false)
   const hasInitialized = useRef(false)
@@ -276,17 +276,7 @@ function PaymentConfirmationContent() {
   return (
     <div className="py-12">
       <div className="container mx-auto px-4">
-        {isUpdating && (
-          <div className="text-center mb-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto mb-4" style={{ borderColor: 'rgb(59, 102, 126)' }}></div>
-            <h2 className="text-2xl font-bold mb-4" style={{ color: 'rgb(85, 85, 85)' }}>Processing Your Payment</h2>
-            <p style={{ color: 'rgb(85, 85, 85)' }}>
-              Please wait while we confirm your payment and activate your permit...
-            </p>
-          </div>
-        )}
-
-        {!isUpdating && updateStatus === 'success' && (
+        {updateStatus === 'success' && (
           <>
             {/* Hero Section */}
             <div className="text-center mb-12">
@@ -294,7 +284,7 @@ function PaymentConfirmationContent() {
                 Payment Confirmed
               </h1>
               <p className="text-xl mb-8 max-w-3xl mx-auto text-center" style={{ color: 'rgb(85, 85, 85)' }}>
-                Your purchase of a shellfish permit has been completed successfully.
+                Your purchase was completed successfully.
               </p>
             </div>
 
@@ -393,7 +383,7 @@ function PaymentConfirmationContent() {
             </div>
         )}
 
-        {!isUpdating && updateStatus === 'error' && (
+        {updateStatus === 'error' && (
           <>
             {/* Hero Section */}
             <div className="text-center mb-12">
@@ -420,7 +410,7 @@ function PaymentConfirmationContent() {
           </>
         )}
 
-        {!isUpdating && updateStatus === 'error' && (
+        {updateStatus === 'error' && (
           <div className="max-w-4xl mx-auto">
             <div className="rounded-xl shadow-xl border overflow-hidden" style={{ backgroundColor: 'rgb(59, 102, 126)', borderColor: 'rgb(85, 85, 85)' }}>
               <div className="p-12">

@@ -39,11 +39,11 @@ export default function ConditionalLayout({
       </main>
       <footer style={{ backgroundColor: 'rgba(18, 62, 45, 0.9)', color: 'white' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
               <h3 className="text-lg font-semibold mb-4">Greenwich Shellfish Commission</h3>
               <p className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
-                Managing shellfish resources and permits for the Town of Greenwich, Connecticut.
+                Managing shellfish resources for the Town of Greenwich, Connecticut.
               </p>
             </div>
             <div>
@@ -54,18 +54,9 @@ export default function ConditionalLayout({
                 <li><a href="/admin/login" className="transition-colors" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>Admin Portal</a></li>
               </ul>
             </div>
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Contact Information</h3>
-              <div className="text-sm space-y-1" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
-                <p>Town of Greenwich</p>
-                <p>101 Field Point Road</p>
-                <p>Greenwich, CT 06830</p>
-                <p>Phone: (203) 622-7700</p>
-              </div>
-            </div>
           </div>
           <div className="mt-8 pt-8 text-center text-sm" style={{ borderTop: '1px solid rgba(255, 255, 255, 0.2)', color: 'rgba(255, 255, 255, 0.6)' }}>
-            <p>&copy; 2024 Town of Greenwich, Connecticut. All rights reserved.</p>
+            <p>&copy; 2025 Paint Industries, LLC. All rights reserved.</p>
           </div>
         </div>
       </footer>

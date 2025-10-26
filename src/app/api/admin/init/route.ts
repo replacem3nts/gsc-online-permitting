@@ -4,8 +4,9 @@ import { hashPassword } from '../../../../lib/auth'
 
 export async function POST(request: NextRequest) {
   try {
-    const adminUsername = process.env.ADMIN_USERNAME || 'admin'
-    const adminPassword = process.env.ADMIN_PASSWORD || 'admin123'
+    const body = await request.json().catch(() => ({}))
+    const adminUsername = body.username || process.env.ADMIN_USERNAME || 'admin'
+    const adminPassword = body.password || process.env.ADMIN_PASSWORD || 'admin123'
     
     // Check if admin already exists
     const existingAdmin = await prisma.admin.findUnique({

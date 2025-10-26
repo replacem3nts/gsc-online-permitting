@@ -122,45 +122,36 @@ export default function AdminDashboard() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <svg className="animate-spin h-8 w-8 text-blue-600 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
-          <p className="text-gray-600">Loading dashboard...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 mx-auto mb-4" style={{ borderColor: 'rgb(59, 102, 126)' }}></div>
+          <p style={{ color: 'rgb(85, 85, 85)' }}>Loading dashboard...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen" style={{ backgroundColor: 'rgb(245, 245, 245)' }}>
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-gray-900">
-                  Admin Dashboard
-                </h1>
-                <p className="text-xs text-gray-500">Greenwich Shellfish Permits</p>
-              </div>
+            <div>
+              <h1 className="text-xl font-bold" style={{ color: 'rgb(85, 85, 85)', fontFamily: 'EB Garamond, serif' }}>
+                Admin Dashboard
+              </h1>
             </div>
             <div className="flex items-center space-x-4">
               <button
                 onClick={exportCSV}
-                className="bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-700 transition-colors duration-200"
+                className="text-white px-4 py-2 rounded-md text-sm font-medium hover:opacity-80 transition-opacity duration-200"
+                style={{ backgroundColor: 'rgba(18, 62, 45, 0.9)' }}
               >
                 Export CSV
               </button>
               <button
                 onClick={handleLogout}
-                className="bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-red-700 transition-colors duration-200"
+                className="text-white px-4 py-2 rounded-md text-sm font-medium hover:opacity-80 transition-opacity duration-200"
+                style={{ backgroundColor: 'rgb(85, 85, 85)' }}
               >
                 Logout
               </button>
@@ -230,7 +221,7 @@ export default function AdminDashboard() {
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Revenue</p>
                 <p className="text-2xl font-semibold text-gray-900">
-                  ${(stats.regular * 25 + stats.senior * 15 + stats.junior * 10).toLocaleString()}
+                  ${(stats.regular * 15 + stats.senior * 10 + stats.junior * 1).toLocaleString()}
                 </p>
               </div>
             </div>
@@ -247,7 +238,8 @@ export default function AdminDashboard() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search by name or email..."
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:border-transparent"
+                style={{ '--tw-ring-color': 'rgb(59, 102, 126)' } as React.CSSProperties}
               />
             </div>
             <div>
@@ -255,7 +247,8 @@ export default function AdminDashboard() {
               <select
                 value={filterType}
                 onChange={(e) => setFilterType(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:border-transparent"
+                style={{ '--tw-ring-color': 'rgb(59, 102, 126)' } as React.CSSProperties}
               >
                 <option value="all">All Types</option>
                 <option value="regular">Regular</option>
@@ -268,7 +261,8 @@ export default function AdminDashboard() {
               <select
                 value={filterPayment}
                 onChange={(e) => setFilterPayment(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:border-transparent"
+                style={{ '--tw-ring-color': 'rgb(59, 102, 126)' } as React.CSSProperties}
               >
                 <option value="all">All</option>
                 <option value="paid">Paid</option>
@@ -282,7 +276,8 @@ export default function AdminDashboard() {
                   setFilterType('all')
                   setFilterPayment('all')
                 }}
-                className="w-full bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700 transition-colors duration-200"
+                className="w-full text-white py-2 px-4 rounded-md hover:opacity-80 transition-opacity duration-200"
+                style={{ backgroundColor: 'rgb(85, 85, 85)' }}
               >
                 Clear Filters
               </button>
@@ -293,8 +288,8 @@ export default function AdminDashboard() {
         {/* Users Table */}
         <div className="bg-white rounded-lg shadow overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-200">
-            <h3 className="text-lg font-medium text-gray-900">
-              Permit Applications ({filteredUsers.length})
+            <h3 className="text-lg font-medium" style={{ color: 'rgb(85, 85, 85)', fontFamily: 'EB Garamond, serif' }}>
+              Permits ({filteredUsers.length})
             </h3>
           </div>
           <div className="overflow-x-auto">
@@ -317,7 +312,7 @@ export default function AdminDashboard() {
                     Payment
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Applied
+                    Date Issued
                   </th>
                 </tr>
               </thead>
