@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { put } from '@vercel/blob';
 import { ImageResponse } from '@vercel/og';
+import React from 'react';
 
 export async function POST(request: NextRequest) {
   try {
@@ -29,143 +30,115 @@ export async function POST(request: NextRequest) {
 
     // Generate permit image using background image with absolute positioned text
     const imageResponse = new ImageResponse(
-      {
-        type: 'div',
-        props: {
-          style: {
-            width: '816px',
-            height: '535px',
-            backgroundImage: 'url(/blank_permit.png)',
-            backgroundSize: '100% 100%',
-            backgroundPosition: 'top left',
-            backgroundRepeat: 'no-repeat',
-            position: 'relative',
-            display: 'flex',
-            fontFamily: 'Arial, sans-serif',
-          },
-          children: [
-            // Season
-            {
-              type: 'div',
-              props: {
-                style: {
-                  position: 'absolute',
-                  top: '185px',
-                  left: '45px',
-                  textAlign: 'center',
-                  fontSize: '18px',
-                  fontWeight: 'bold',
-                },
-                children: "'25 - '26"
-              }
-            },
-            // Permit Number
-            {
-              type: 'div',
-              props: {
-                style: {
-                  position: 'absolute',
-                  top: '185px',
-                  left: '235px',
-                  textAlign: 'center',
-                  fontSize: '18px',
-                  fontWeight: 'bold',
-                },
-                children: userData?.permitNumber || '001'
-              }
-            },
-            // Issued Date
-            {
-              type: 'div',
-              props: {
-                style: {
-                  position: 'absolute',
-                  top: '260px',
-                  left: '45px',
-                  textAlign: 'center',
-                  fontSize: '16px',
-                  fontWeight: 'bold',
-                },
-                children: formattedPaymentDate
-              }
-            },
-            // Expires Date
-            {
-              type: 'div',
-              props: {
-                style: {
-                  position: 'absolute',
-                  top: '260px',
-                  left: '235px',
-                  textAlign: 'center',
-                  fontSize: '16px',
-                  fontWeight: 'bold',
-                },
-                children: formattedExpirationDate
-              }
-            },
-            // Name
-            {
-              type: 'div',
-              props: {
-                style: {
-                  position: 'absolute',
-                  top: '105px',
-                  left: '450px',
-                  fontSize: '16px',
-                  fontWeight: 'bold',
-                },
-                children: `${userData?.firstName} ${userData?.lastName}`
-              }
-            },
-            // Height
-            {
-              type: 'div',
-              props: {
-                style: {
-                  position: 'absolute',
-                  top: '175px',
-                  left: '450px',
-                  textAlign: 'center',
-                  fontSize: '16px',
-                  fontWeight: 'bold',
-                },
-                children: userData?.height
-              }
-            },
-            // D.O.B.
-            {
-              type: 'div',
-              props: {
-                style: {
-                  position: 'absolute',
-                  top: '175px',
-                  left: '570px',
-                  textAlign: 'center',
-                  fontSize: '14px',
-                  fontWeight: 'bold',
-                },
-                children: formatDateOfBirth()
-              }
-            },
-            // Eye Color
-            {
-              type: 'div',
-              props: {
-                style: {
-                  position: 'absolute',
-                  top: '175px',
-                  left: '695px',
-                  textAlign: 'center',
-                  fontSize: '16px',
-                  fontWeight: 'bold',
-                },
-                children: userData?.eyeColor
-              }
-            }
-          ]
+      React.createElement('div', {
+        style: {
+          width: '816px',
+          height: '535px',
+          backgroundImage: 'url(/blank_permit.png)',
+          backgroundSize: '100% 100%',
+          backgroundPosition: 'top left',
+          backgroundRepeat: 'no-repeat',
+          position: 'relative',
+          display: 'flex',
+          fontFamily: 'Arial, sans-serif',
         }
-      },
+      }, [
+        // Season
+        React.createElement('div', {
+          key: 'season',
+          style: {
+            position: 'absolute',
+            top: '185px',
+            left: '45px',
+            textAlign: 'center',
+            fontSize: '18px',
+            fontWeight: 'bold',
+          }
+        }, "'25 - '26"),
+        // Permit Number
+        React.createElement('div', {
+          key: 'permit-number',
+          style: {
+            position: 'absolute',
+            top: '185px',
+            left: '235px',
+            textAlign: 'center',
+            fontSize: '18px',
+            fontWeight: 'bold',
+          }
+        }, userData?.permitNumber || '001'),
+        // Issued Date
+        React.createElement('div', {
+          key: 'issued-date',
+          style: {
+            position: 'absolute',
+            top: '260px',
+            left: '45px',
+            textAlign: 'center',
+            fontSize: '16px',
+            fontWeight: 'bold',
+          }
+        }, formattedPaymentDate),
+        // Expires Date
+        React.createElement('div', {
+          key: 'expires-date',
+          style: {
+            position: 'absolute',
+            top: '260px',
+            left: '235px',
+            textAlign: 'center',
+            fontSize: '16px',
+            fontWeight: 'bold',
+          }
+        }, formattedExpirationDate),
+        // Name
+        React.createElement('div', {
+          key: 'name',
+          style: {
+            position: 'absolute',
+            top: '105px',
+            left: '450px',
+            fontSize: '16px',
+            fontWeight: 'bold',
+          }
+        }, `${userData?.firstName} ${userData?.lastName}`),
+        // Height
+        React.createElement('div', {
+          key: 'height',
+          style: {
+            position: 'absolute',
+            top: '175px',
+            left: '450px',
+            textAlign: 'center',
+            fontSize: '16px',
+            fontWeight: 'bold',
+          }
+        }, userData?.height),
+        // D.O.B.
+        React.createElement('div', {
+          key: 'dob',
+          style: {
+            position: 'absolute',
+            top: '175px',
+            left: '570px',
+            textAlign: 'center',
+            fontSize: '14px',
+            fontWeight: 'bold',
+          }
+        }, formatDateOfBirth()),
+        // Eye Color
+        React.createElement('div', {
+          key: 'eye-color',
+          style: {
+            position: 'absolute',
+            top: '175px',
+            left: '695px',
+            textAlign: 'center',
+            fontSize: '16px',
+            fontWeight: 'bold',
+          }
+        }, userData?.eyeColor)
+      ]),
       {
         width: 816,
         height: 535,
