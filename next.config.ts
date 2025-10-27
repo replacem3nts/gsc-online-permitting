@@ -6,6 +6,7 @@ const nextConfig: NextConfig = {
     '/api/**/*': [
       'node_modules/.prisma/client/**/*',
       'node_modules/@prisma/client/**/*',
+      'node_modules/next/dist/compiled/@vercel/og/**/*',
     ],
   },
 };
